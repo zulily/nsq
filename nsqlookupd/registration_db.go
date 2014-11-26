@@ -20,14 +20,15 @@ type Registration struct {
 type Registrations []Registration
 
 type PeerInfo struct {
-	lastUpdate       int64
-	id               string
-	RemoteAddress    string `json:"remote_address"`
-	Hostname         string `json:"hostname"`
-	BroadcastAddress string `json:"broadcast_address"`
-	TcpPort          int    `json:"tcp_port"`
-	HttpPort         int    `json:"http_port"`
-	Version          string `json:"version"`
+	lastUpdate           int64
+	id                   string
+	RemoteAddress        string `json:"remote_address"`
+	Hostname             string `json:"hostname"`
+	TcpBroadcastAddress  string `json:"tcp_broadcast_address"`
+	TcpPort              int    `json:"tcp_port"`
+	HttpBroadcastAddress string `json:"http_broadcast_address"`
+	HttpPort             int    `json:"http_port"`
+	Version              string `json:"version"`
 }
 
 type Producer struct {
@@ -39,7 +40,7 @@ type Producer struct {
 type Producers []*Producer
 
 func (p *Producer) String() string {
-	return fmt.Sprintf("%s [%d, %d]", p.peerInfo.BroadcastAddress, p.peerInfo.TcpPort, p.peerInfo.HttpPort)
+	return fmt.Sprintf("[%s, %s] [%d, %d]", p.peerInfo.TcpBroadcastAddress, p.peerInfo.HttpBroadcastAddress, p.peerInfo.TcpPort, p.peerInfo.HttpPort)
 }
 
 func (p *Producer) Tombstone() {

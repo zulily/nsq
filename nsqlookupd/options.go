@@ -9,9 +9,10 @@ import (
 type nsqlookupdOptions struct {
 	Verbose bool `flag:"verbose"`
 
-	TCPAddress       string `flag:"tcp-address"`
-	HTTPAddress      string `flag:"http-address"`
-	BroadcastAddress string `flag:"broadcast-address"`
+	TCPAddress           string `flag:"tcp-address"`
+	HTTPAddress          string `flag:"http-address"`
+	TCPBroadcastAddress  string `flag:"tcp-broadcast-address"`
+	HTTPBroadcastAddress string `flag:"http-broadcast-address"`
 
 	InactiveProducerTimeout time.Duration `flag:"inactive-producer-timeout"`
 	TombstoneLifetime       time.Duration `flag:"tombstone-lifetime"`
@@ -26,9 +27,10 @@ func NewNSQLookupdOptions() *nsqlookupdOptions {
 	}
 
 	return &nsqlookupdOptions{
-		TCPAddress:       "0.0.0.0:4160",
-		HTTPAddress:      "0.0.0.0:4161",
-		BroadcastAddress: hostname,
+		TCPAddress:           "0.0.0.0:4160",
+		HTTPAddress:          "0.0.0.0:4161",
+		TCPBroadcastAddress:  hostname,
+		HTTPBroadcastAddress: hostname,
 
 		InactiveProducerTimeout: 300 * time.Second,
 		TombstoneLifetime:       45 * time.Second,

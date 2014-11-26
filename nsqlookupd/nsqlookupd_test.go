@@ -63,12 +63,13 @@ func mustConnectLookupd(t *testing.T, tcpAddr *net.TCPAddr) net.Conn {
 	return conn
 }
 
-func identify(t *testing.T, conn net.Conn, address string, tcpPort int, httpPort int, version string) {
+func identify(t *testing.T, conn net.Conn, tcpAddress string, httpAddress string, tcpPort int, httpPort int, version string) {
 	ci := make(map[string]interface{})
 	ci["tcp_port"] = tcpPort
 	ci["http_port"] = httpPort
-	ci["broadcast_address"] = address
-	ci["hostname"] = address
+	ci["tcp_broadcast_address"] = tcpAddress
+	ci["http_broadcast_address"] = httpAddress
+	ci["hostname"] = tcpAddress
 	ci["version"] = version
 	cmd, _ := nsq.Identify(ci)
 	_, err := cmd.WriteTo(conn)
@@ -92,7 +93,7 @@ func TestBasicLookupd(t *testing.T) {
 
 	tcpPort := 5000
 	httpPort := 5555
-	identify(t, conn, "ip.address", tcpPort, httpPort, "fake-version")
+	identify(t, conn, "ip.address", "ip.address", tcpPort, httpPort, "fake-version")
 
 	nsq.Register(topicName, "channel1").WriteTo(conn)
 	v, err := nsq.ReadResponse(conn)
@@ -113,7 +114,8 @@ func TestBasicLookupd(t *testing.T) {
 	equal(t, len(producers), 1)
 	producer := producers[0]
 
-	equal(t, producer.peerInfo.BroadcastAddress, "ip.address")
+	equal(t, producer.peerInfo.TcpBroadcastAddress, "ip.address")
+	equal(t, producer.peerInfo.HttpBroadcastAddress, "ip.address")
 	equal(t, producer.peerInfo.Hostname, "ip.address")
 	equal(t, producer.peerInfo.TcpPort, tcpPort)
 	equal(t, producer.peerInfo.HttpPort, httpPort)
@@ -149,9 +151,13 @@ func TestBasicLookupd(t *testing.T) {
 		equal(t, err, nil)
 		equal(t, port, httpPort)
 
-		broadcastaddress, err := producer.Get("broadcast_address").String()
+		tcpbroadcastaddress, err := producer.Get("tcp_broadcast_address").String()
 		equal(t, err, nil)
-		equal(t, broadcastaddress, "ip.address")
+		equal(t, tcpbroadcastaddress, "ip.address")
+
+		httpbroadcastaddress, err := producer.Get("http_broadcast_address").String()
+		equal(t, err, nil)
+		equal(t, httpbroadcastaddress, "ip.address")
 
 		ver, err := producer.Get("version").String()
 		equal(t, err, nil)
@@ -188,7 +194,7 @@ func TestChannelUnregister(t *testing.T) {
 
 	tcpPort := 5000
 	httpPort := 5555
-	identify(t, conn, "ip.address", tcpPort, httpPort, "fake-version")
+	identify(t, conn, "ip.address", "ip.address", tcpPort, httpPort, "fake-version")
 
 	nsq.Register(topicName, "ch1").WriteTo(conn)
 	v, err := nsq.ReadResponse(conn)
@@ -235,7 +241,7 @@ func TestTombstoneRecover(t *testing.T) {
 	conn := mustConnectLookupd(t, tcpAddr)
 	defer conn.Close()
 
-	identify(t, conn, "ip.address", 5000, 5555, "fake-version")
+	identify(t, conn, "ip.address", "ip.address", 5000, 5555, "fake-version")
 
 	nsq.Register(topicName, "channel1").WriteTo(conn)
 	_, err := nsq.ReadResponse(conn)
@@ -283,7 +289,7 @@ func TestTombstoneUnregister(t *testing.T) {
 	conn := mustConnectLookupd(t, tcpAddr)
 	defer conn.Close()
 
-	identify(t, conn, "ip.address", 5000, 5555, "fake-version")
+	identify(t, conn, "ip.address", "ip.address", 5000, 5555, "fake-version")
 
 	nsq.Register(topicName, "channel1").WriteTo(conn)
 	_, err := nsq.ReadResponse(conn)
@@ -327,7 +333,7 @@ func TestInactiveNodes(t *testing.T) {
 	conn := mustConnectLookupd(t, tcpAddr)
 	defer conn.Close()
 
-	identify(t, conn, "ip.address", 5000, 5555, "fake-version")
+	identify(t, conn, "ip.address", "ip.address", 5000, 5555, "fake-version")
 
 	nsq.Register(topicName, "channel1").WriteTo(conn)
 	_, err := nsq.ReadResponse(conn)
@@ -358,7 +364,7 @@ func TestTombstonedNodes(t *testing.T) {
 	conn := mustConnectLookupd(t, tcpAddr)
 	defer conn.Close()
 
-	identify(t, conn, "ip.address", 5000, 5555, "fake-version")
+	identify(t, conn, "ip.address", "ip.address", 5000, 5555, "fake-version")
 
 	nsq.Register(topicName, "channel1").WriteTo(conn)
 	_, err := nsq.ReadResponse(conn)

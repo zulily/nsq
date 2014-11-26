@@ -212,14 +212,14 @@ func (p *LookupProtocolV1) IDENTIFY(client *ClientV1, reader *bufio.Reader, para
 	peerInfo.RemoteAddress = client.RemoteAddr().String()
 
 	// require all fields
-	if peerInfo.BroadcastAddress == "" || peerInfo.TcpPort == 0 || peerInfo.HttpPort == 0 || peerInfo.Version == "" {
+	if peerInfo.TcpBroadcastAddress == "" || peerInfo.HttpBroadcastAddress == "" || peerInfo.TcpPort == 0 || peerInfo.HttpPort == 0 || peerInfo.Version == "" {
 		return nil, util.NewFatalClientErr(nil, "E_BAD_BODY", "IDENTIFY missing fields")
 	}
 
 	atomic.StoreInt64(&peerInfo.lastUpdate, time.Now().UnixNano())
 
-	p.ctx.nsqlookupd.logf("CLIENT(%s): IDENTIFY Address:%s TCP:%d HTTP:%d Version:%s",
-		client, peerInfo.BroadcastAddress, peerInfo.TcpPort, peerInfo.HttpPort, peerInfo.Version)
+	p.ctx.nsqlookupd.logf("CLIENT(%s): IDENTIFY TCPAddress:%s TCP:%d HTTPAddress:%s HTTP:%d Version:%s",
+		client, peerInfo.TcpBroadcastAddress, peerInfo.HttpBroadcastAddress, peerInfo.TcpPort, peerInfo.HttpPort, peerInfo.Version)
 
 	client.peerInfo = &peerInfo
 	if p.ctx.nsqlookupd.DB.AddProducer(Registration{"client", "", ""}, &Producer{peerInfo: client.peerInfo}) {
@@ -235,7 +235,8 @@ func (p *LookupProtocolV1) IDENTIFY(client *ClientV1, reader *bufio.Reader, para
 	if err != nil {
 		log.Fatalf("ERROR: unable to get hostname %s", err)
 	}
-	data["broadcast_address"] = p.ctx.nsqlookupd.opts.BroadcastAddress
+	data["tcp_broadcast_address"] = p.ctx.nsqlookupd.opts.TCPBroadcastAddress
+	data["http_broadcast_address"] = p.ctx.nsqlookupd.opts.HTTPBroadcastAddress
 	data["hostname"] = hostname
 
 	response, err := json.Marshal(data)

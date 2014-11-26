@@ -22,9 +22,10 @@ var (
 	showVersion = flagSet.Bool("version", false, "print version string")
 	verbose     = flagSet.Bool("verbose", false, "enable verbose logging")
 
-	tcpAddress       = flagSet.String("tcp-address", "0.0.0.0:4160", "<addr>:<port> to listen on for TCP clients")
-	httpAddress      = flagSet.String("http-address", "0.0.0.0:4161", "<addr>:<port> to listen on for HTTP clients")
-	broadcastAddress = flagSet.String("broadcast-address", "", "address of this lookupd node, (default to the OS hostname)")
+	tcpAddress           = flagSet.String("tcp-address", "0.0.0.0:4160", "<addr>:<port> to listen on for TCP clients")
+	httpAddress          = flagSet.String("http-address", "0.0.0.0:4161", "<addr>:<port> to listen on for HTTP clients")
+	tcpBroadcastAddress  = flagSet.String("tcp-broadcast-address", "", "address of this lookupd node, for TCP communication with nsqd (default to the OS hostname)")
+	httpBroadcastAddress = flagSet.String("http-broadcast-address", "", "address of this lookupd node, for HTTP communication with nsqd (default to the OS hostname)")
 
 	inactiveProducerTimeout = flagSet.Duration("inactive-producer-timeout", 300*time.Second, "duration of time a producer will remain in the active list since its last ping")
 	tombstoneLifetime       = flagSet.Duration("tombstone-lifetime", 45*time.Second, "duration of time a producer will remain tombstoned if registration remains")

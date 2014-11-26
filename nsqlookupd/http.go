@@ -257,7 +257,7 @@ func (s *httpServer) doTombstoneTopicProducer(req *http.Request) (interface{}, e
 	s.ctx.nsqlookupd.logf("DB: setting tombstone for producer@%s of topic(%s)", node, topicName)
 	producers := s.ctx.nsqlookupd.DB.FindProducers("topic", topicName, "")
 	for _, p := range producers {
-		thisNode := fmt.Sprintf("%s:%d", p.peerInfo.BroadcastAddress, p.peerInfo.HttpPort)
+		thisNode := fmt.Sprintf("%s:%d", p.peerInfo.HttpBroadcastAddress, p.peerInfo.HttpPort)
 		if thisNode == node {
 			p.Tombstone()
 		}
@@ -313,14 +313,15 @@ func (s *httpServer) doDeleteChannel(req *http.Request) (interface{}, error) {
 }
 
 type node struct {
-	RemoteAddress    string   `json:"remote_address"`
-	Hostname         string   `json:"hostname"`
-	BroadcastAddress string   `json:"broadcast_address"`
-	TcpPort          int      `json:"tcp_port"`
-	HttpPort         int      `json:"http_port"`
-	Version          string   `json:"version"`
-	Tombstones       []bool   `json:"tombstones"`
-	Topics           []string `json:"topics"`
+	RemoteAddress        string   `json:"remote_address"`
+	Hostname             string   `json:"hostname"`
+	HttpBroadcastAddress string   `json:"http_broadcast_address"`
+	TcpBroadcastAddress  string   `json:"tcp_broadcast_address"`
+	TcpPort              int      `json:"tcp_port"`
+	HttpPort             int      `json:"http_port"`
+	Version              string   `json:"version"`
+	Tombstones           []bool   `json:"tombstones"`
+	Topics               []string `json:"topics"`
 }
 
 func (s *httpServer) doNodes(req *http.Request) (interface{}, error) {
@@ -344,14 +345,15 @@ func (s *httpServer) doNodes(req *http.Request) (interface{}, error) {
 		}
 
 		nodes[i] = &node{
-			RemoteAddress:    p.peerInfo.RemoteAddress,
-			Hostname:         p.peerInfo.Hostname,
-			BroadcastAddress: p.peerInfo.BroadcastAddress,
-			TcpPort:          p.peerInfo.TcpPort,
-			HttpPort:         p.peerInfo.HttpPort,
-			Version:          p.peerInfo.Version,
-			Tombstones:       tombstones,
-			Topics:           topics,
+			RemoteAddress:        p.peerInfo.RemoteAddress,
+			Hostname:             p.peerInfo.Hostname,
+			TcpBroadcastAddress:  p.peerInfo.TcpBroadcastAddress,
+			TcpPort:              p.peerInfo.TcpPort,
+			HttpBroadcastAddress: p.peerInfo.HttpBroadcastAddress,
+			HttpPort:             p.peerInfo.HttpPort,
+			Version:              p.peerInfo.Version,
+			Tombstones:           tombstones,
+			Topics:               topics,
 		}
 	}
 
@@ -369,15 +371,16 @@ func (s *httpServer) doDebug(req *http.Request) (interface{}, error) {
 		key := r.Category + ":" + r.Key + ":" + r.SubKey
 		for _, p := range producers {
 			m := map[string]interface{}{
-				"id":                p.peerInfo.id,
-				"hostname":          p.peerInfo.Hostname,
-				"broadcast_address": p.peerInfo.BroadcastAddress,
-				"tcp_port":          p.peerInfo.TcpPort,
-				"http_port":         p.peerInfo.HttpPort,
-				"version":           p.peerInfo.Version,
-				"last_update":       atomic.LoadInt64(&p.peerInfo.lastUpdate),
-				"tombstoned":        p.tombstoned,
-				"tombstoned_at":     p.tombstonedAt.UnixNano(),
+				"id":                     p.peerInfo.id,
+				"hostname":               p.peerInfo.Hostname,
+				"tcp_broadcast_address":  p.peerInfo.TcpBroadcastAddress,
+				"tcp_port":               p.peerInfo.TcpPort,
+				"http_broadcast_address": p.peerInfo.HttpBroadcastAddress,
+				"http_port":              p.peerInfo.HttpPort,
+				"version":                p.peerInfo.Version,
+				"last_update":            atomic.LoadInt64(&p.peerInfo.lastUpdate),
+				"tombstoned":             p.tombstoned,
+				"tombstoned_at":          p.tombstonedAt.UnixNano(),
 			}
 			data[key] = append(data[key], m)
 		}
