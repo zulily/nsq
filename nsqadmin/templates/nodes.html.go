@@ -13,8 +13,9 @@ func init() {
 <table class="table table-bordered">
     <tr>
         <th>Hostname</th>
-        <th>Broadcast Address</th>
+        <th>TCP Broadcast Address</th>
         <th>TCP Port</th>
+        <th>HTTP Broadcast Address</th>
         <th>HTTP Port</th>
         <th>Version</th>
         {{if $ld}}
@@ -25,9 +26,10 @@ func init() {
     {{range $p := .Producers }}
     <tr {{if .OutOfDate}}class="warning"{{end}}>
         <td>{{.Hostname}}</td>
-        <td><a href="/node/{{.BroadcastAddress}}:{{.HttpPort}}">{{.BroadcastAddress}}</a></td>
-        <td>{{.TcpPort}}</td>
+        <td><a href="/node/{{.HttpBroadcastAddress}}:{{.HttpPort}}">{{.HttpBroadcastAddress}}</a></td>
         <td>{{.HttpPort}}</td>
+        <td><a href="/node/{{.TcpBroadcastAddress}}:{{.TcpPort}}">{{.TcpBroadcastAddress}}</a></td>
+        <td>{{.TcpPort}}</td>
         <td>{{.Version}}</td>
         {{if $ld}}
         <td>

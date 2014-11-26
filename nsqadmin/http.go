@@ -788,7 +788,7 @@ func (s *httpServer) nodeHandler(w http.ResponseWriter, req *http.Request) {
 	}
 	producers, _ := lookupd.GetLookupdProducers(s.ctx.nsqadmin.opts.NSQLookupdHTTPAddresses)
 	for _, p := range producers {
-		if node == fmt.Sprintf("%s:%d", p.BroadcastAddress, p.HttpPort) {
+		if node == fmt.Sprintf("%s:%d", p.HttpBroadcastAddress, p.HttpPort) {
 			found = true
 			break
 		}
@@ -1036,7 +1036,7 @@ func (s *httpServer) getProducers(topicName string) []string {
 
 func producerSearch(producers []*lookupd.Producer, needle string) *lookupd.Producer {
 	for _, producer := range producers {
-		addr := net.JoinHostPort(producer.BroadcastAddress, strconv.Itoa(producer.HttpPort))
+		addr := net.JoinHostPort(producer.HttpBroadcastAddress, strconv.Itoa(producer.HttpPort))
 		if needle == addr {
 			return producer
 		}
