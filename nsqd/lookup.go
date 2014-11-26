@@ -29,7 +29,8 @@ func (n *NSQD) lookupLoop() {
 			ci["tcp_port"] = n.tcpAddr.Port
 			ci["http_port"] = n.httpAddr.Port
 			ci["hostname"] = hostname
-			ci["broadcast_address"] = n.opts.BroadcastAddress
+			ci["tcp_broadcast_address"] = n.opts.TCPBroadcastAddress
+			ci["http_broadcast_address"] = n.opts.HTTPBroadcastAddress
 
 			cmd, err := nsq.Identify(ci)
 			if err != nil {
@@ -141,10 +142,10 @@ exit:
 func (n *NSQD) lookupHttpAddrs() []string {
 	var lookupHttpAddrs []string
 	for _, lp := range n.lookupPeers {
-		if len(lp.Info.BroadcastAddress) <= 0 {
+		if len(lp.Info.HttpBroadcastAddress) <= 0 {
 			continue
 		}
-		addr := net.JoinHostPort(lp.Info.BroadcastAddress, strconv.Itoa(lp.Info.HttpPort))
+		addr := net.JoinHostPort(lp.Info.HttpBroadcastAddress, strconv.Itoa(lp.Info.HttpPort))
 		lookupHttpAddrs = append(lookupHttpAddrs, addr)
 	}
 	return lookupHttpAddrs

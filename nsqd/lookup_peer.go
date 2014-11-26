@@ -24,10 +24,11 @@ type lookupPeer struct {
 
 // peerInfo contains metadata for a lookupPeer instance (and is JSON marshalable)
 type peerInfo struct {
-	TcpPort          int    `json:"tcp_port"`
-	HttpPort         int    `json:"http_port"`
-	Version          string `json:"version"`
-	BroadcastAddress string `json:"broadcast_address"`
+	TcpPort              int    `json:"tcp_port"`
+	HttpPort             int    `json:"http_port"`
+	Version              string `json:"version"`
+	TcpBroadcastAddress  string `json:"tcp_broadcast_address"`
+	HttpBroadcastAddress string `json:"http_broadcast_address"`
 }
 
 // newLookupPeer creates a new lookupPeer instance connecting to the supplied address.

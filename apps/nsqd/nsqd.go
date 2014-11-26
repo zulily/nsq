@@ -29,8 +29,9 @@ var (
 	tcpAddress        = flagSet.String("tcp-address", "0.0.0.0:4150", "<addr>:<port> to listen on for TCP clients")
 	authHttpAddresses = util.StringArray{}
 
-	broadcastAddress = flagSet.String("broadcast-address", "", "address that will be registered with lookupd (defaults to the OS hostname)")
-	lookupdTCPAddrs  = util.StringArray{}
+	tcpBroadcastAddress  = flagSet.String("tcp-broadcast-address", "", "address that will be registered with lookupd for TCP communication (defaults to the OS hostname)")
+	httpBroadcastAddress = flagSet.String("http-broadcast-address", "", "address that will be registered with lookupd for HTTP communication (defaults to the OS hostname)")
+	lookupdTCPAddrs      = util.StringArray{}
 
 	// diskqueue options
 	dataPath        = flagSet.String("data-path", "", "path to store disk-backed messages")

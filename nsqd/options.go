@@ -16,7 +16,8 @@ type nsqdOptions struct {
 	TCPAddress             string   `flag:"tcp-address"`
 	HTTPAddress            string   `flag:"http-address"`
 	HTTPSAddress           string   `flag:"https-address"`
-	BroadcastAddress       string   `flag:"broadcast-address"`
+	TCPBroadcastAddress    string   `flag:"tcp-broadcast-address"`
+	HTTPBroadcastAddress   string   `flag:"http-broadcast-address"`
 	NSQLookupdTCPAddresses []string `flag:"lookupd-tcp-address" cfg:"nsqlookupd_tcp_addresses"`
 	AuthHTTPAddresses      []string `flag:"auth-http-address" cfg:"auth_http_addresses"`
 
@@ -73,10 +74,11 @@ func NewNSQDOptions() *nsqdOptions {
 	}
 
 	o := &nsqdOptions{
-		TCPAddress:       "0.0.0.0:4150",
-		HTTPAddress:      "0.0.0.0:4151",
-		HTTPSAddress:     "0.0.0.0:4152",
-		BroadcastAddress: hostname,
+		TCPAddress:           "0.0.0.0:4150",
+		HTTPAddress:          "0.0.0.0:4151",
+		HTTPSAddress:         "0.0.0.0:4152",
+		TCPBroadcastAddress:  hostname,
+		HTTPBroadcastAddress: hostname,
 
 		MemQueueSize:    10000,
 		MaxBytesPerFile: 104857600,
