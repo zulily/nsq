@@ -131,10 +131,11 @@ func GetLookupdProducers(lookupdHTTPAddrs []string) ([]*Producer, error) {
 					remoteAddress = "NA"
 				}
 				hostname := producer.Get("hostname").MustString()
-				broadcastAddress := producer.Get("broadcast_address").MustString()
+				tcpBroadcastAddress := producer.Get("tcp_broadcast_address").MustString()
+				httpBroadcastAddress := producer.Get("http_broadcast_address").MustString()
 				httpPort := producer.Get("http_port").MustInt()
 				tcpPort := producer.Get("tcp_port").MustInt()
-				key := fmt.Sprintf("%s:%d:%d", broadcastAddress, httpPort, tcpPort)
+				key := fmt.Sprintf("%s:%s:%d:%d", httpBroadcastAddress, tcpBroadcastAddress, httpPort, tcpPort)
 				p, ok := allProducers[key]
 				if !ok {
 					var tombstones []bool
@@ -170,13 +171,14 @@ func GetLookupdProducers(lookupdHTTPAddrs []string) ([]*Producer, error) {
 					}
 
 					p = &Producer{
-						Hostname:         hostname,
-						BroadcastAddress: broadcastAddress,
-						TcpPort:          tcpPort,
-						HttpPort:         httpPort,
-						Version:          version,
-						VersionObj:       versionObj,
-						Topics:           topics,
+						Hostname:             hostname,
+						TcpBroadcastAddress:  tcpBroadcastAddress,
+						HttpBroadcastAddress: httpBroadcastAddress,
+						TcpPort:              tcpPort,
+						HttpPort:             httpPort,
+						Version:              version,
+						VersionObj:           versionObj,
+						Topics:               topics,
 					}
 					allProducers[key] = p
 					output = append(output, p)
@@ -226,9 +228,9 @@ func GetLookupdTopicProducers(topic string, lookupdHTTPAddrs []string) ([]string
 			producersArray, _ := producers.Array()
 			for i := range producersArray {
 				producer := producers.GetIndex(i)
-				broadcastAddress := producer.Get("broadcast_address").MustString()
+				httpBroadcastAddress := producer.Get("http_broadcast_address").MustString()
 				httpPort := producer.Get("http_port").MustInt()
-				key := net.JoinHostPort(broadcastAddress, strconv.Itoa(httpPort))
+				key := net.JoinHostPort(httpBroadcastAddress, strconv.Itoa(httpPort))
 				allSources = util.StringAdd(allSources, key)
 			}
 		}(endpoint)

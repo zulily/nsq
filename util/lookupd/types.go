@@ -21,23 +21,24 @@ func (pt ProducerTopics) Swap(i, j int)      { pt[i], pt[j] = pt[j], pt[i] }
 func (pt ProducerTopics) Less(i, j int) bool { return pt[i].Topic < pt[j].Topic }
 
 type Producer struct {
-	RemoteAddresses  []string        `json:"remote_addresses"`
-	Hostname         string          `json:"hostname"`
-	BroadcastAddress string          `json:"broadcast_address"`
-	TcpPort          int             `json:"tcp_port"`
-	HttpPort         int             `json:"http_port"`
-	Version          string          `json:"version"`
-	VersionObj       *semver.Version `json:"-"`
-	Topics           ProducerTopics  `json:"topics"`
-	OutOfDate        bool
+	RemoteAddresses      []string        `json:"remote_addresses"`
+	Hostname             string          `json:"hostname"`
+	TcpBroadcastAddress  string          `json:"tcp_broadcast_address"`
+	HttpBroadcastAddress string          `json:"http_broadcast_address"`
+	TcpPort              int             `json:"tcp_port"`
+	HttpPort             int             `json:"http_port"`
+	Version              string          `json:"version"`
+	VersionObj           *semver.Version `json:"-"`
+	Topics               ProducerTopics  `json:"topics"`
+	OutOfDate            bool
 }
 
 func (p *Producer) HTTPAddress() string {
-	return fmt.Sprintf("%s:%d", p.BroadcastAddress, p.HttpPort)
+	return fmt.Sprintf("%s:%d", p.HttpBroadcastAddress, p.HttpPort)
 }
 
 func (p *Producer) TCPAddress() string {
-	return fmt.Sprintf("%s:%d", p.BroadcastAddress, p.TcpPort)
+	return fmt.Sprintf("%s:%d", p.TcpBroadcastAddress, p.TcpPort)
 }
 
 // IsInconsistent checks for cases where an unexpected number of nsqd connections are
@@ -228,5 +229,5 @@ func (c TopicStatsByHost) Less(i, j int) bool {
 	return c.TopicStatsList[i].HostAddress < c.TopicStatsList[j].HostAddress
 }
 func (c ProducersByHost) Less(i, j int) bool {
-	return c.ProducerList[i].BroadcastAddress < c.ProducerList[j].BroadcastAddress
+	return c.ProducerList[i].TcpBroadcastAddress < c.ProducerList[j].TcpBroadcastAddress
 }
